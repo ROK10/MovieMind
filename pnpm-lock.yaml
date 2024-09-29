@@ -32,6 +32,9 @@ dependencies:
   dotenv:
     specifier: ^16.4.5
     version: 16.4.5
+  ignore-loader:
+    specifier: ^0.1.2
+    version: 0.1.2
   next:
     specifier: 14.2.13
     version: 14.2.13(@babel/core@7.25.2)(@opentelemetry/api@1.9.0)(react-dom@18.3.1)(react@18.3.1)
@@ -2905,6 +2908,7 @@ packages:
       minimatch: 9.0.5
       minipass: 7.1.2
       path-scurry: 1.11.1
+    dev: true
 
   /glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
@@ -3037,6 +3041,10 @@ packages:
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
+    dev: false
+
+  /ignore-loader@0.1.2:
+    resolution: {integrity: sha512-yOJQEKrNwoYqrWLS4DcnzM7SEQhRKis5mB+LdKKh4cPmGYlLPR0ozRzHV5jmEk2IxptqJNQA5Cc0gw8Fj12bXA==}
     dev: false
 
   /ignore@5.3.2:
@@ -3309,6 +3317,7 @@ packages:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
+    dev: true
 
   /jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
@@ -4539,7 +4548,7 @@ packages:
       dayjs: 1.11.13
       debug: 4.3.7
       dotenv: 16.4.5
-      glob: 10.3.10
+      glob: 10.4.5
       mkdirp: 2.1.6
       pg: 8.13.0
       reflect-metadata: 0.2.2

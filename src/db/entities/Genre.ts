@@ -1,7 +1,6 @@
-// src/entities/Genre.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
-import { Movie } from "@/entities/Movie";
-import { TvShow } from "@/entities/TvShow";
+import { Movie } from "@/db/entities/Movie";
+import { TvShow } from "@/db/entities/TvShow";
 
 @Entity()
 export class Genre {

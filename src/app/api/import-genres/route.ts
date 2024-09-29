@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { AppDataSource } from "../../../db/data-source";
-import { Genre } from "@/entities/Genre";
+import { Genre } from "@/db/entities/Genre";
 
 const TMDB_BEARER_TOKEN = process.env.TMDB_BEARER_TOKEN;
 

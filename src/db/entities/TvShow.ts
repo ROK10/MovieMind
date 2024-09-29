@@ -5,7 +5,7 @@ import {
   ManyToMany,
   JoinTable,
 } from "typeorm";
-import { Genre } from "./Genre";
+import { Genre } from "@/db/entities/Genre";
 
 @Entity()
 export class TvShow {
