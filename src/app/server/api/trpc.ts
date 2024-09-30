@@ -1,7 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { db } from "@/db";
+import { db } from "@/app/server/db";
 
 const createInnerTRPCContext = () => {
   return {

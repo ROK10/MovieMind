@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { db } from "@/db"; // Ensure this is the instance of your Drizzle ORM
-import { eq } from "drizzle-orm";
-import { movieGenres, tvGenres } from "@/db/schema"; // Import the correct schema
+import { db } from "@/app/server/db";
 
 const TMDB_BEARER_TOKEN = process.env.TMDB_BEARER_TOKEN;
 
@@ -31,35 +29,22 @@ export async function GET() {
     const movieGenresData = movieGenresResponse.data.genres;
     const tvGenresData = tvGenresResponse.data.genres;
 
-    // Insert movie genres using Drizzle ORM
+    // Insert movie genres using Prisma
     for (const genre of movieGenresData) {
-      const existingGenre = await db
-        .select()
-        .from(movieGenres as any)
-        .where(eq(movieGenres.id, genre.id) as any)
-        .execute();
-
-      if (!existingGenre) {
-        await db
-          .insert(movieGenres as any)
-          .values({ id: genre.id, name: genre.name })
-          .execute();
-      }
+      await db.movieGenres.upsert({
+        where: { id: genre.id },
+        update: { name: genre.name },
+        create: { id: genre.id, name: genre.name },
+      });
     }
 
+    // Insert TV show genres using Prisma
     for (const genre of tvGenresData) {
-      const existingGenre = await db
-        .select()
-        .from(tvGenres as any)
-        .where(eq(tvGenres.id, genre.id) as any)
-        .execute();
-
-      if (!existingGenre) {
-        await db
-          .insert(tvGenres as any)
-          .values({ id: genre.id, name: genre.name })
-          .execute();
-      }
+      await db.tvShowGenres.upsert({
+        where: { id: genre.id },
+        update: { name: genre.name },
+        create: { id: genre.id, name: genre.name },
+      });
     }
 
     console.log("Genres import completed.");
