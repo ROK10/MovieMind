@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    container_name: nextjs_app
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=AdminUser
+      - DB_PASSWORD=AdminPassword
+      - DB_NAME=movie_mind
+      - TMDB_BEARER_TOKEN=${TMDB_BEARER_TOKEN}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: AdminUser
+      POSTGRES_PASSWORD: AdminPassword
+      POSTGRES_DB: movie_mind
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

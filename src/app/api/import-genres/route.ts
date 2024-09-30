@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
-import { AppDataSource } from "../../../db/data-source";
-import { Genre } from "@/db/entities/Genre";
+import { db } from "@/db"; // Ensure this is the instance of your Drizzle ORM
+import { eq } from "drizzle-orm";
+import { movieGenres, tvGenres } from "@/db/schema"; // Import the correct schema
 
 const TMDB_BEARER_TOKEN = process.env.TMDB_BEARER_TOKEN;
 
 export async function GET() {
   try {
-    
     const movieGenresResponse = await axios.get(
       "https://api.themoviedb.org/3/genre/movie/list?language=en",
       {
@@ -17,7 +17,7 @@ export async function GET() {
         },
       }
     );
-    
+
     const tvGenresResponse = await axios.get(
       "https://api.themoviedb.org/3/genre/tv/list?language=en",
       {
@@ -28,24 +28,37 @@ export async function GET() {
       }
     );
 
-    const genresData = [
-      ...movieGenresResponse.data.genres,
-      ...tvGenresResponse.data.genres,
-    ];
+    const movieGenresData = movieGenresResponse.data.genres;
+    const tvGenresData = tvGenresResponse.data.genres;
 
-    await AppDataSource.initialize();
-
-    for (const genre of genresData) {
-      const existingGenre = await AppDataSource.getRepository(Genre).findOne({
-        where: { id: genre.id },
-      });
+    // Insert movie genres using Drizzle ORM
+    for (const genre of movieGenresData) {
+      const existingGenre = await db
+        .select()
+        .from(movieGenres as any)
+        .where(eq(movieGenres.id, genre.id) as any)
+        .execute();
 
       if (!existingGenre) {
-        const newGenre = AppDataSource.getRepository(Genre).create({
-          id: genre.id,
-          name: genre.name,
-        });
-        await AppDataSource.getRepository(Genre).save(newGenre);
+        await db
+          .insert(movieGenres as any)
+          .values({ id: genre.id, name: genre.name })
+          .execute();
+      }
+    }
+
+    for (const genre of tvGenresData) {
+      const existingGenre = await db
+        .select()
+        .from(tvGenres as any)
+        .where(eq(tvGenres.id, genre.id) as any)
+        .execute();
+
+      if (!existingGenre) {
+        await db
+          .insert(tvGenres as any)
+          .values({ id: genre.id, name: genre.name })
+          .execute();
       }
     }
 

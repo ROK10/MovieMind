@@ -1,21 +1,18 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { AppDataSource } from "@/db/data-source"; 
+import { db } from "@/db";
 
-// Context without session/authentication
 const createInnerTRPCContext = () => {
   return {
-    db: AppDataSource,
+    db,
   };
 };
 
-// The actual context you will use in your router
 export const createTRPCContext = async () => {
   return createInnerTRPCContext();
 };
 
-// Initialize tRPC
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
@@ -30,6 +27,5 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-// Export router and procedure creation functions
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;

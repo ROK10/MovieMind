@@ -1,8 +1,7 @@
-import { AppDataSource } from "../db/data-source";
+import { db } from "@/db";
 
 export async function createContext() {
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
-  }
-  return {};
+  return {
+    db,
+  };
 }
