@@ -7,49 +7,35 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model movies {
-  id               Int           @id @default(autoincrement())
-  tmdbId           Int           @unique
-  title            String
-  overview         String?
-  originalLanguage String
-  originalTitle    String
-  popularity       Float
-  voteAverage      Float
-  voteCount        Int
-  releaseDate      DateTime
-  posterPath       String
-  backdropPath     String
-  adult            Boolean
-  video            Boolean
-  genres           movieGenres[]
+model movie {
+  id                Int           @id @default(autoincrement())
+  tmdbId            Int           @unique
+  title             String
+  overview          String?
+  original_language String
+  original_title    String
+  popularity        Float
+  vote_average      Float
+  vote_count        Int
+  release_date      DateTime
+  poster_path       String
+  backdrop_path     String?
+  adult             Boolean
+  video             Boolean
+  movie_genres      movie_genre[]
 }
 
-model tvShows {
-  id               Int            @id @default(autoincrement())
-  tmdbId           Int            @unique
-  name             String
-  overview         String?
-  originalLanguage String
-  originalName     String
-  popularity       Float
-  voteAverage      Float
-  voteCount        Int
-  firstAirDate     DateTime
-  posterPath       String
-  backdropPath     String
-  adult            Boolean
-  genres           tvShowGenres[]
+model genre {
+  id           Int           @id @default(autoincrement())
+  name         String
+  movie_genres movie_genre[]
 }
 
-model movieGenres {
-  id     Int      @id @default(autoincrement())
-  name   String
-  movies movies[]
-}
+model movie_genre {
+  movie    movie @relation(fields: [movie_id], references: [id])
+  movie_id Int
+  genre    genre @relation(fields: [genre_id], references: [id])
+  genre_id Int
 
-model tvShowGenres {
-  id      Int       @id @default(autoincrement())
-  name    String
-  tvShows tvShows[]
+  @@id([movie_id, genre_id])
 }
