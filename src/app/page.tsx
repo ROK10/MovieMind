@@ -171,12 +171,15 @@ const HomePage: React.FC = () => {
           alignItems: "center",
           justifyContent: "center",
           marginTop: "40px",
+          width: "100%",
+          maxWidth: "1000px",
         }}
       >
         <TextField
           variant="outlined"
           sx={{
-            width: "800px",
+            width: "100%",
+            maxWidth: "800px",
             backgroundColor: "white",
             borderTopLeftRadius: "20px",
             borderBottomLeftRadius: "20px",
