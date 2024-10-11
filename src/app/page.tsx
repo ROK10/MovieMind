@@ -63,10 +63,15 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const { data, isLoading } = api.movies.getAllMovies.useQuery({
-    page: 1,
-    cursor: null,
-  });
+  const { data, isLoading } = api.movies.getAllMovies.useQuery(
+    {
+      page: 1,
+      cursor: null,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const importMovies = async () => {
     setLoading(true);
@@ -130,7 +135,8 @@ const HomePage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (queryError && retryCount < 3) { // Limit retries to 3 attempts
+    if (queryError && retryCount < 3) {
+      // Limit retries to 3 attempts
       console.log("Retrying query due to error:", queryError);
       setRetryCount((prev) => prev + 1);
       handleQuery();
