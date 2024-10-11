@@ -3,8 +3,8 @@ import axios from "axios";
 import { db } from "@/app/server/db";
 
 const TMDB_BEARER_TOKEN = process.env.TMDB_BEARER_TOKEN;
-const START_PAGE = 1; // Define the start page
-const END_PAGE = 5; // Define the end page
+const START_PAGE = 281; // Define the start page
+const END_PAGE = 320; // Define the end page
 
 export async function GET() {
   try {
@@ -43,7 +43,7 @@ export async function GET() {
               release_date: movie.release_date
                 ? new Date(movie.release_date)
                 : new Date(0),
-              poster_path: movie.poster_path,
+              poster_path: movie.poster_path || "",
               backdrop_path: movie.backdrop_path || null,
               adult: movie.adult,
               video: movie.video,

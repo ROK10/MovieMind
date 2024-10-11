@@ -12,6 +12,12 @@
     "migration:run": "npm run typeorm migration:run"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.3",
+    "@mui/material": "^6.1.3",
+    "@mui/styles": "^6.1.3",
+    "@mui/x-data-grid": "^7.19.0",
     "@prisma/client": "^5.20.0",
     "@sentry/nextjs": "^8.32.0",
     "@tanstack/react-query": "^4.36.1",

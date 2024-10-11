@@ -95,6 +95,34 @@ export const moviesRouter = createTRPCRouter({
         query: z.string(),
       })
     )
+    .output(
+      z.object({
+        movies: z.array(
+          z.object({
+            id: z.number(),
+            tmdbId: z.number(),
+            title: z.string(),
+            overview: z.string().optional(),
+            original_language: z.string(),
+            original_title: z.string(),
+            popularity: z.number(),
+            vote_average: z.number(),
+            vote_count: z.number(),
+            release_date: z.date(),
+            poster_path: z.string(),
+            backdrop_path: z.string().nullable(),
+            adult: z.boolean(),
+            video: z.boolean(),
+            genres: z.array(
+              z.object({
+                id: z.number(),
+                name: z.string(),
+              })
+            ),
+          })
+        ),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const { query } = input;
 
@@ -107,8 +135,58 @@ export const moviesRouter = createTRPCRouter({
       console.log("Cleaned SQL Query:", cleanedQuery);
       // Ensure the query is safe and valid
       try {
-        const result = await ctx.db.$queryRawUnsafe(cleanedQuery); // Use Prisma to execute the cleaned SQL query
-        return result;
+        const rawResult = await ctx.db.$queryRawUnsafe(cleanedQuery);
+
+        // Get the first 30 movie IDs from rawResult
+        // @ts-ignore
+        const movieIds = rawResult
+          .slice(0, 30)
+          .map((movie: any) => movie.tmdbId);
+
+        // Fetch full movie details including genres from the database
+        const movies = await ctx.db.movie.findMany({
+          where: { tmdbId: { in: movieIds } },
+          include: {
+            movie_genres: {
+              include: {
+                genre: true,
+              },
+            },
+          },
+        });
+
+        // Sort movies to match the order of movieIds
+        const sortedMovies = movieIds
+          .map((id: number) => movies.find((movie) => movie.tmdbId === id))
+          .filter(
+            (movie: { tmdbId: any }, index: any, self: any[]) =>
+              index === self.findIndex((m) => m?.tmdbId === movie?.tmdbId)
+          );
+
+        const formattedMovies = sortedMovies.map((movie: any) => ({
+          id: movie.id,
+          tmdbId: movie.tmdbId,
+          title: movie.title,
+          overview: movie.overview ?? undefined,
+          original_language: movie.original_language,
+          original_title: movie.original_title,
+          popularity: movie.popularity,
+          vote_average: movie.vote_average,
+          vote_count: movie.vote_count,
+          release_date: movie.release_date,
+          poster_path: movie.poster_path,
+          backdrop_path: movie.backdrop_path,
+          adult: movie.adult,
+          video: movie.video,
+          genres: movie.movie_genres.map(
+            (movie_genre: { genre: { id: any; name: any } }) => ({
+              id: movie_genre.genre.id,
+              name: movie_genre.genre.name,
+            })
+          ),
+        }));
+
+        return { movies: formattedMovies };
       } catch (error) {
         console.error("Error executing query:", error);
         if (error instanceof Error) {

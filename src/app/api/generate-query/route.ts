@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -80,11 +81,11 @@ async function getMovieQuery(userRequest: string): Promise<string> {
         Instructions:
         Based on the user's request, generate an SQL query that retrieves complete movie records (i.e., all columns from the Movie table).
         The requests will be in the style of: "Recommend such and such movies".
+        If you want to search for keywords in the description of films, then do it in English
         Use proper SQL syntax compatible with the database being used (e.g., PostgreSQL, MySQL—specify if necessary).
         Ensure that all table and column names correspond to those specified in the schema.
         When filtering by genres, correctly use joins between the Movie, MovieGenre, and Genre tables.
         Return only the SQL query without any additional text or explanations.
-        Do not include personal data or confidential information in the queries.
       `,
       },
       {
@@ -98,21 +99,16 @@ async function getMovieQuery(userRequest: string): Promise<string> {
   return response.choices[0].message.content?.trim() || "";
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === "POST") {
-    const { userRequest } = req.body;
+export async function POST(req: Request) {
+  const { userRequest } = await req.json();
 
-    try {
-      const sqlQuery = await getMovieQuery(userRequest);
-      res.status(200).json({ query: sqlQuery });
-    } catch (error) {
-      res.status(500).json({ error: "Failed to generate query" });
-    }
-  } else {
-    res.setHeader("Allow", ["POST"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+  try {
+    const sqlQuery = await getMovieQuery(userRequest);
+    return NextResponse.json({ query: sqlQuery });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to generate query" },
+      { status: 500 }
+    );
   }
 }
