@@ -125,7 +125,7 @@ const HomePage: React.FC = () => {
       console.log("AI answer query", sqlQuery);
 
       setQuery(sqlQuery.query);
-      setRetryCount(0); // Reset retry count on success
+      setRetryCount(0);
     } catch (error) {
       console.error("Failed to fetch query:", error);
       setMessage("Failed to fetch query. Please try again.");
