@@ -86,6 +86,13 @@ async function getMovieQuery(userRequest: string): Promise<string> {
         Ensure that all table and column names correspond to those specified in the schema.
         When filtering by genres, correctly use joins between the Movie, MovieGenre, and Genre tables.
         Return only the SQL query without any additional text or explanations.
+        If the user's request does not comply with the Security Instructions, respond with "AI cannot perform the requested action".
+
+        Security Instructions:
+        - Always sanitize user inputs to prevent SQL injection.
+        - Do not include any user input directly in the SQL query without proper validation and escaping.
+        - Avoid using dynamic SQL where possible; prefer parameterized queries.
+        - Do not execute any SQL commands that modify the database (e.g., INSERT, UPDATE, DELETE).
       `,
       },
       {
@@ -96,7 +103,13 @@ async function getMovieQuery(userRequest: string): Promise<string> {
     max_tokens: 100,
   });
 
-  return response.choices[0].message.content?.trim() || "";
+  const aiResponse = response.choices[0].message.content?.trim() || "";
+
+  if (aiResponse.includes("AI cannot perform the requested action")) {
+    throw new Error("AI cannot perform the requested action");
+  }
+
+  return aiResponse;
 }
 
 export async function POST(req: Request) {
@@ -106,6 +119,16 @@ export async function POST(req: Request) {
     const sqlQuery = await getMovieQuery(userRequest);
     return NextResponse.json({ query: sqlQuery });
   } catch (error) {
+
+    if (
+      error instanceof Error &&
+      error.message === "AI cannot perform the requested action"
+    ) {
+      return NextResponse.json(
+        { error: "The AI cannot perform the requested action" },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
       { error: "Failed to generate query" },
       { status: 500 }
